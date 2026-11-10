@@ -62,6 +62,43 @@ class QuizGame:
 
         self.best_score = 0
 
+    def add_quiz(self):
+        print("\n===== 새로운 퀴즈 추가 =====")
+
+        while True:
+            question = input("새로운 문제를 입력하세요: ").strip()
+
+            if question:
+                break
+
+            print("문제는 비워 둘 수 없습니다.")
+
+        choices = []
+
+        for number in range(1, 5):
+            while True:
+                choice = input(f"{number}번 보기를 입력하세요: ").strip()
+
+                if choice:
+                    choices.append(choice)
+                    break
+
+                print("보기는 비워 둘 수 없습니다.")
+
+        while True:
+            answer = input("정답 번호를 입력하세요 (1~4): ").strip()
+
+            if answer in ["1", "2", "3", "4"]:
+                break
+
+            print("잘못된 입력입니다. 1~4 중에서 선택해 주세요.")
+
+        new_quiz = Quiz(question, choices, int(answer))
+        self.quizzes.append(new_quiz)
+
+        print("\n새로운 퀴즈가 추가되었습니다!")
+        print("현재 총", len(self.quizzes), "문제입니다.")
+
     def play(self):
         score = 0
 
@@ -116,7 +153,7 @@ class QuizGame:
                 self.play()
 
             elif choice == "2":
-                print("\n퀴즈 추가 기능은 다음 단계에서 구현합니다.")
+                self.add_quiz()
 
             elif choice == "3":
                 self.show_quizzes()
