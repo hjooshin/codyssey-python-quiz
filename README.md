@@ -336,3 +336,23 @@ Git으로 기능별 변경 사항을 기록하고 브랜치를 병합하면서 �
 
 
 
+\## 실행 및 Git 작업 화면
+
+
+
+\### 퀴즈 게임 실행 화면
+
+
+
+!\[퀴즈 게임 실행 화면](screenshots/quiz-menu.png)
+
+
+
+\### Git 커밋 및 브랜치 병합 기록
+
+
+
+!\[Git 작업 기록](screenshots/git-history.png)
+
+
+
