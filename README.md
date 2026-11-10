@@ -354,5 +354,3 @@ Git으로 기능별 변경 사항을 기록하고 브랜치를 병합하면서 �
 
 !\[Git 작업 기록](screenshots/git-history.png)
 
-
-
