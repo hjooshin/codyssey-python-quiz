@@ -1,5 +1,8 @@
 import json
-import os
+from pathlib import Path
+
+
+STATE_FILE = Path(__file__).resolve().parent / "state.json"
 
 
 class Quiz:
@@ -81,34 +84,78 @@ class QuizGame:
         }
 
         try:
-            with open("state.json", "w", encoding="utf-8") as file:
+            with open(STATE_FILE, "w", encoding="utf-8") as file:
                 json.dump(data, file, ensure_ascii=False, indent=4)
+
             print("데이터가 저장되었습니다.")
-        except OSError as error:
+
+        except (OSError, TypeError, ValueError) as error:
             print("데이터 저장 중 오류가 발생했습니다:", error)
 
     def load_state(self):
-        if not os.path.exists("state.json"):
+        if not STATE_FILE.exists():
+            print("저장 파일이 없어 기본 퀴즈로 시작합니다.")
             return
 
         try:
-            with open("state.json", "r", encoding="utf-8") as file:
+            with open(STATE_FILE, "r", encoding="utf-8") as file:
                 data = json.load(file)
 
-            for item in data.get("added_quizzes", []):
-                quiz = Quiz(
-                    item["question"],
-                    item["choices"],
-                    item["answer"]
-                )
-                self.quizzes.append(quiz)
+            if not isinstance(data, dict):
+                raise ValueError("저장 데이터 형식이 올바르지 않습니다.")
 
-            self.best_score = data.get("best_score", 0)
+            saved_quizzes = data.get("added_quizzes", [])
+            saved_score = data.get("best_score", 0)
+
+            if not isinstance(saved_quizzes, list):
+                raise ValueError("퀴즈 목록 형식이 올바르지 않습니다.")
+
+            if type(saved_score) is not int or not 0 <= saved_score <= 100:
+                raise ValueError("최고 점수 형식이 올바르지 않습니다.")
+
+            loaded_quizzes = []
+
+            for item in saved_quizzes:
+                if not isinstance(item, dict):
+                    raise ValueError("퀴즈 데이터 형식이 올바르지 않습니다.")
+
+                question = item["question"]
+                choices = item["choices"]
+                answer = item["answer"]
+
+                if not isinstance(question, str) or not question.strip():
+                    raise ValueError("문제 내용이 올바르지 않습니다.")
+
+                if (
+                    not isinstance(choices, list)
+                    or len(choices) != 4
+                    or not all(
+                        isinstance(choice, str) and choice.strip()
+                        for choice in choices
+                    )
+                ):
+                    raise ValueError("보기 데이터가 올바르지 않습니다.")
+
+                if type(answer) is not int or answer not in range(1, 5):
+                    raise ValueError("정답 번호가 올바르지 않습니다.")
+
+                loaded_quizzes.append(Quiz(question, choices, answer))
+
+            self.quizzes.extend(loaded_quizzes)
+            self.best_score = saved_score
+
             print("저장된 데이터를 불러왔습니다.")
 
-        except (OSError, ValueError, KeyError, TypeError) as error:
-            print("저장된 데이터를 불러올 수 없습니다:", error)
+        except (
+            OSError,
+            UnicodeError,
+            ValueError,
+            KeyError,
+            TypeError
+        ) as error:
+            print("저장 파일에 문제가 있습니다:", error)
             print("기본 퀴즈로 시작합니다.")
+            self.best_score = 0
 
     def add_quiz(self):
         print("\n===== 새로운 퀴즈 추가 =====")
@@ -125,7 +172,9 @@ class QuizGame:
 
         for number in range(1, 5):
             while True:
-                choice = input(f"{number}번 보기를 입력하세요: ").strip()
+                choice = input(
+                    f"{number}번 보기를 입력하세요: "
+                ).strip()
 
                 if choice:
                     choices.append(choice)
@@ -134,7 +183,9 @@ class QuizGame:
                 print("보기는 비워 둘 수 없습니다.")
 
         while True:
-            answer = input("정답 번호를 입력하세요 (1~4): ").strip()
+            answer = input(
+                "정답 번호를 입력하세요 (1~4): "
+            ).strip()
 
             if answer in ["1", "2", "3", "4"]:
                 break
@@ -187,38 +238,44 @@ class QuizGame:
         print("국립현대미술관 뉴미디어 소장품 특별전")
         print("미술·문화예술 상식 퀴즈에 오신 것을 환영합니다!")
 
-        while True:
-            print("\n===== 퀴즈 게임 메뉴 =====")
-            print("1. 퀴즈 풀기")
-            print("2. 퀴즈 추가하기")
-            print("3. 퀴즈 목록 보기")
-            print("4. 최고 점수 확인")
-            print("5. 종료")
+        try:
+            while True:
+                print("\n===== 퀴즈 게임 메뉴 =====")
+                print("1. 퀴즈 풀기")
+                print("2. 퀴즈 추가하기")
+                print("3. 퀴즈 목록 보기")
+                print("4. 최고 점수 확인")
+                print("5. 종료")
 
-            choice = input(
-                "\n원하는 메뉴 번호를 입력하세요 (1~5): "
-            ).strip()
+                choice = input(
+                    "\n원하는 메뉴 번호를 입력하세요 (1~5): "
+                ).strip()
 
-            if choice == "1":
-                self.play()
+                if choice == "1":
+                    self.play()
 
-            elif choice == "2":
-                self.add_quiz()
+                elif choice == "2":
+                    self.add_quiz()
 
-            elif choice == "3":
-                self.show_quizzes()
+                elif choice == "3":
+                    self.show_quizzes()
 
-            elif choice == "4":
-                self.show_best_score()
+                elif choice == "4":
+                    self.show_best_score()
 
-            elif choice == "5":
-                self.save_state()
-                print("\n게임을 종료합니다.")
-                print("이용해 주셔서 감사합니다!")
-                break
+                elif choice == "5":
+                    print("\n게임을 종료합니다.")
+                    break
 
-            else:
-                print("잘못된 입력입니다. 1~5 중에서 선택해 주세요.")
+                else:
+                    print("잘못된 입력입니다. 1~5 중에서 선택해 주세요.")
+
+        except (KeyboardInterrupt, EOFError):
+            print("\n입력이 중단되어 게임을 종료합니다.")
+
+        finally:
+            self.save_state()
+            print("이용해 주셔서 감사합니다!")
 
 
 if __name__ == "__main__":
