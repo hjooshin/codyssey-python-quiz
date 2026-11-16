@@ -435,3 +435,9 @@ Git으로 기능별 변경 사항을 기록하고 브랜치를 병합하면서 �
 
 ![Git 커밋 및 브랜치 병합 기록](screenshots/git-history-updated.png)
 
+### Git clone 실행 화면
+![Git clone 실행 결과](screenshots/git-clone.png)
+
+### Git pull 실행 화면
+![Git pull 실행 결과](screenshots/git-pull.png)
+
