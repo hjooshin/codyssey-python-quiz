@@ -428,12 +428,14 @@ Git으로 기능별 변경 사항을 기록하고 브랜치를 병합하면서 �
 ![퀴즈 게임 실행 화면](screenshots/quiz-menu.png)
 
 
-
 ### Git 커밋 및 브랜치 병합 기록
 
+- 총 22개의 커밋을 기록하여 평가 기준인 10개 이상의 커밋 조건을 충족했습니다. (스크린샷 촬영 시점에는 21개)
+- 기능 구현, 입력 검증, JSON 데이터 저장, README 문서화 등을 단계별로 커밋했습니다.
+- `feature/quiz` 브랜치에서 기능을 개발한 후 `main` 브랜치로 병합했습니다.
+- 아래 스크린샷에서 커밋 이력과 브랜치 병합 기록을 확인할 수 있습니다.
 
-
-![Git 커밋 및 브랜치 병합 기록](screenshots/git-history-updated.png)
+![Git 커밋 및 브랜치 병합 기록](screenshots/git-history-final.png)
 
 ### Git clone 실행 화면
 ![Git clone 실행 결과](screenshots/git-clone.png)
